@@ -1,5 +1,10 @@
 package com.zjj.baselibrary.http;
 
+import com.zjj.baselibrary.model.HttpResponseModel;
+import com.zjj.baselibrary.model.HttpFailureModel;
+
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -114,7 +119,7 @@ public class MyOkHttp2 {
      * @param charset
      * @return
      */
-    protected static void rawPost(String url, String requestBody, Map<String,String> customeHeads, String charset,final MyCallBack finalCallback,final int id )  {
+    protected static void rawPost(String url, String requestBody, Map<String,String> customeHeads, String charset,final int id )  {
         try {
             OkHttpClient httpClient = getHttpClient();
             RequestBody body =createReqestBody(requestBody, charset);
@@ -127,20 +132,20 @@ public class MyOkHttp2 {
             httpClient.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    finalCallback.onFailure(HttpResult.Failed(e),id);
+                    sentFailure(e,id);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
-                        finalCallback.onResponse(HttpResult.FromJsonString( getResponseContent(response)),id);
+                        sentResponse(HttpResult.FromJsonString( getResponseContent(response)),id);
                     }catch (IOException e){
-                        finalCallback.onFailure(HttpResult.Failed(e),id);
+                        sentFailure(e,id);
                     }
                 }
             });
         }catch (IOException e){
-            finalCallback.onFailure(HttpResult.Failed(e),id);
+            sentFailure(e,id);
         }
     }
 
@@ -152,8 +157,8 @@ public class MyOkHttp2 {
      * @param charset 请求体格式
      * @return
      */
-    public static void post(String url, String requestBody,  Map<String, String> customeHeaders, String charset,final MyCallBack finalCallback,final int id){
-         rawPost(url, requestBody, customeHeaders, charset,finalCallback,id);
+    public static void post(String url, String requestBody,  Map<String, String> customeHeaders, String charset,final int id){
+         rawPost(url, requestBody, customeHeaders, charset,id);
     }
 
     /**
@@ -164,9 +169,9 @@ public class MyOkHttp2 {
      * @param charset
      * @return
      */
-    public static void post(String url, ParameterMap parameters, Map<String,String> customeHeads, String charset,final MyCallBack finalCallback,final int id) {
+    public static void post(String url, ParameterMap parameters, Map<String,String> customeHeads, String charset,final int id) {
         String parameterString = parameters == null ? "" : parameters.toJSONString();
-         rawPost(url, parameterString, customeHeads, charset,finalCallback,id);
+         rawPost(url, parameterString, customeHeads, charset,id);
     }
 
     /**
@@ -177,7 +182,7 @@ public class MyOkHttp2 {
      * @param charset
      * @return
      */
-    protected static void rawPut(String url, String requestBody, Map<String,String> customeHeads, String charset,final MyCallBack finalCallback,final int id ){
+    protected static void rawPut(String url, String requestBody, Map<String,String> customeHeads, String charset,final int id ){
         try {
             OkHttpClient httpClient = getHttpClient();
             RequestBody body =createReqestBody(requestBody, charset);
@@ -190,33 +195,33 @@ public class MyOkHttp2 {
             httpClient.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    finalCallback.onFailure(HttpResult.Failed(e),id);
+                    sentFailure(e,id);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
-                        finalCallback.onResponse(HttpResult.FromJsonString( getResponseContent(response)),id);
+                        sentResponse(HttpResult.FromJsonString( getResponseContent(response)),id);
                     }catch (IOException e){
-                        finalCallback.onFailure(HttpResult.Failed(e),id);
+                        sentFailure(e,id);
                     }
                 }
             });
         }catch (IOException e){
-            finalCallback.onFailure(HttpResult.Failed(e),id);
+            sentFailure(e,id);
         }
     }
 
-    public static void put(String url, String requestBody,  Map<String, String> customeHeaders, String charset,final MyCallBack finalCallback,final int id) {
-        rawPut(url, requestBody, customeHeaders, charset, finalCallback,id);
+    public static void put(String url, String requestBody,  Map<String, String> customeHeaders, String charset,final int id) {
+        rawPut(url, requestBody, customeHeaders, charset,id);
     }
 
-    public static void put(String url, ParameterMap parameters, Map<String,String> customeHeads, String charset,final MyCallBack finalCallback,final int id) {
+    public static void put(String url, ParameterMap parameters, Map<String,String> customeHeads, String charset,final int id) {
         String parametersString = parameters == null ? "" : parameters.toJSONString();
-        put(url, parametersString, customeHeads, charset, finalCallback,id);
+        put(url, parametersString, customeHeads, charset,id);
     }
 
-    private static void rawGet(final String url, final String queryString,final MyCallBack finalCallback,final int id) {
+    private static void rawGet(final String url, final String queryString,final int id) {
         try {
             OkHttpClient httpClient = getHttpClient();
             String fullUrl = queryString == null ? url : url + "?" + queryString;
@@ -228,27 +233,37 @@ public class MyOkHttp2 {
             httpClient.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    finalCallback.onFailure(HttpResult.Failed(e),id);
+                    sentFailure(e,id);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
-                        finalCallback.onResponse(HttpResult.FromJsonString( getResponseContent(response)),id);
+                        sentResponse(HttpResult.FromJsonString( getResponseContent(response)),id);
                     }catch (IOException e){
-                        finalCallback.onFailure(HttpResult.Failed(e),id);
+                        sentFailure(e,id);
                     }
                 }
             });
         }catch (IOException e){
-            finalCallback.onFailure(HttpResult.Failed(e),id);
+            sentFailure(e,id);
         }
     }
 
-    public static void get(String url, ParameterMap parameters, MyCallBack callback,int id)  {
+    public static void get(String url, ParameterMap parameters, int id)  {
         String queryString = parameters == null ? null : parameters.toQueryString();
-        rawGet(url, queryString,callback,id) ;
+        rawGet(url, queryString,id) ;
     }
 
+
+    private static void sentResponse(HttpResult result ,int id){
+        HttpResponseModel eventModel = new HttpResponseModel(result,id);
+        EventBus.getDefault().post(eventModel);
+    }
+
+    private static void sentFailure(Exception e,int id){
+        HttpFailureModel eventModel = new HttpFailureModel(HttpResult.Failed(e),id);
+        EventBus.getDefault().post(eventModel);
+    }
 
 }
