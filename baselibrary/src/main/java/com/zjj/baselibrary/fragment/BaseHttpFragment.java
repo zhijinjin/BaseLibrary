@@ -1,14 +1,19 @@
-package com.zjj.baselibrary.activity;
+package com.zjj.baselibrary.fragment;
 
+import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
+import com.zjj.baselibrary.R;
 import com.zjj.baselibrary.http.HttpResult;
 import com.zjj.baselibrary.http.MyOkHttp2;
 import com.zjj.baselibrary.http.ParameterMap;
-import com.zjj.baselibrary.model.HttpResponseModel;
 import com.zjj.baselibrary.model.HttpFailureModel;
+import com.zjj.baselibrary.model.HttpResponseModel;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -17,30 +22,25 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.Map;
 
 
-/**
- * 包含网络请求方法，使用 Callback 进行网络请求回调，网络请求使用MyOkHttp2
- * Created by zhijinjin on 2018/3/28.
- */
-public class BaseHttpActivity extends BaseActivity {
+public class BaseHttpFragment extends Fragment {
+
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
-        EventBus.getDefault().register(this);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(!EventBus.getDefault().isRegistered(this)){
+            EventBus.getDefault().register(this);
+        }
     }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EventBus.getDefault().register(this);
-    }
-
 
     @Override
     public void onStop() {
         super.onStop();
-        EventBus.getDefault().unregister(this);
+        if(EventBus.getDefault().isRegistered(this)){
+            EventBus.getDefault().unregister(this);
+        }
     }
+
 
     /**
      * post请求

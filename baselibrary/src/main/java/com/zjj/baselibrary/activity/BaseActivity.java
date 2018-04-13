@@ -29,15 +29,17 @@ public class BaseActivity extends AppCompatActivity {
 
     //跳转封装
     private static void start(Context context, Class<?> clazz, Bundle bundle){
-        if (context != null && BaseActivity.class.isAssignableFrom(clazz)) {
+        if (context != null ) {
             context.startActivity(newIntent(clazz, context, bundle));
-        }else{
-            // context.startActivity(newIntent(clazz, context, bundle));
         }
     }
 
     public static void start(Activity activity, Class<?> clazz, Bundle bundle){
         start((Context) activity, clazz, bundle);
+    }
+
+    public static void start(Activity activity, Class<?> clazz){
+        start((Context) activity, clazz, null);
     }
 
     public static void start(Fragment fragment, Class<?> clazz,  Bundle bundle){
