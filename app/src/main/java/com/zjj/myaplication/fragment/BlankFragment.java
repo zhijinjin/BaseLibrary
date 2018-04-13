@@ -1,18 +1,24 @@
-package com.zjj.myaplication;
+package com.zjj.myaplication.fragment;
 
+import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.zjj.baselibrary.activity.BaseHttpActivity;
+import com.zjj.baselibrary.fragment.BaseHttpFragment;
 import com.zjj.baselibrary.http.HttpResult;
 import com.zjj.baselibrary.http.ParameterMap;
+import com.zjj.myaplication.R;
 
 import java.util.HashMap;
 import java.util.Map;
 
-
-public class MainActivity extends BaseHttpActivity {
+public class BlankFragment extends BaseHttpFragment {
 
     String url = "";
     String url1 = "http://47.94.222.147:8192/api/blocks/getheight";   //高度地址
@@ -25,14 +31,19 @@ public class MainActivity extends BaseHttpActivity {
 
     TextView tv_1,tv_2,tv_3;
 
+    public BlankFragment() {
+        // Required empty public constructor
+    }
+
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        tv_1 = findViewById(R.id.tv_1);
-        tv_2 = findViewById(R.id.tv_2);
-        tv_3 = findViewById(R.id.tv_3);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View contentView =  inflater.inflate(R.layout.fragment_blank, container, false);
+        tv_1 = contentView.findViewById(R.id.tv_1);
+        tv_2 = contentView.findViewById(R.id.tv_2);
+        tv_3 = contentView.findViewById(R.id.tv_3);
 
         httpGet(url1,2);
 
@@ -44,30 +55,8 @@ public class MainActivity extends BaseHttpActivity {
         paramets4.put("secret","lawsuit laptop quote debate fragile december blood pet wish auction horn private");
         paramets4.put("username","shuai_ge");
         httpPut(url3,paramets4,4);
-    }
 
-
-    public void onClik(View v){
-        start(this,Main2Activity.class,null);
-    }
-
-    private void loadData(){
-        httpGet(url,paramets,1);
-        httpGet(url,2);
-
-        httpPost(url,paramets,3);
-        httpPost(url,paramets,customeHeads,4);
-        httpPost(url,paramets,customeHeads,charset,5);
-        httpPost(url,body,6);
-        httpPost(url,body,customeHeads,7);
-        httpPost(url,body,customeHeads,charset,8);
-
-        httpPut(url,paramets,9);
-        httpPut(url,paramets,customeHeads,10);
-        httpPut(url,paramets,customeHeads,charset,11);
-        httpPut(url,body,12);
-        httpPut(url,body,customeHeads,13);
-        httpPut(url,body,customeHeads,charset,14);
+        return contentView;
     }
 
     @Override
