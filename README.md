@@ -12,6 +12,7 @@
   public void onHttpResponse(HttpResult result, int id){
 
   }
+  
   //请求失败
   public void onHttpFailure(HttpResult result, int id){
 
