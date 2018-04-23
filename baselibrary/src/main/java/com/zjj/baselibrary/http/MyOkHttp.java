@@ -253,4 +253,8 @@ public class MyOkHttp {
         String queryString = parameters == null ? null : parameters.toQueryString();
         return  rawGet(url, queryString) ;
     }
+
+    public static HttpResult get(String url)  {
+        return  get(url, null) ;
+    }
 }

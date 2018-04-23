@@ -255,6 +255,9 @@ public class MyOkHttp2 {
         rawGet(url, queryString,id) ;
     }
 
+    public static void get(String url, int id)  {
+         get(url, null,id) ;
+    }
 
     private static void sentResponse(HttpResult result ,int id){
         HttpResponseModel eventModel = new HttpResponseModel(result,id);
